@@ -1,0 +1,3023 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <windows.h>
+#include <conio.h>
+#include <ctype.h>
+#include <string.h>
+
+//Movimentar por meio das teclas
+#define LOCADO 1
+#define DEVOLVIDO 2
+#define COD 12
+#define ENTER 13
+#define CIMA 72
+#define ESQ 75
+#define DIR 77
+#define BAIXO 80
+
+//Procesamento
+#define NOME 100
+#define MOD 100
+#define MAR 100
+
+//Aplicar cores
+#define BLACK  0
+#define BLUE 1
+#define GREEN 2
+#define GREENBLUE 3
+#define RED 4
+#define PURPLE 5
+#define YELLOW 6
+#define WHITE 7
+#define GREY 8
+#define LIGHT BLUE 9
+#define LIGHTGREEN 10
+#define GREENWATER 11
+#define LIGHTRED 12
+#define LILAC 13
+#define LIGHTYELLOW 14
+#define BRIGHTWHITE 15
+
+//-----------------------------------------------------------------PROTÓTIPOS----------------------------------------------------------------------------------
+
+//-----------------------------------------------------------------Interface-----------------------------------------------------------------------------------
+//Função GOTOXY
+//-----------------Procedimento para deslocar o curso-------------------------
+   void gotoxy(int, int);
+//Função TEXTCOLORS
+//----------Procedimento para inserir cores de letras no programa-------------
+   void textcolor(int);
+//-----------Procedimento para inserir cores de fundo no programa-------------
+   void textbackground(int);
+//------------------------------ABERTURA--------------------------------------
+   void abertura(void);   
+// ----------------------------APAGAR TELA------------------------------------
+   void apagar(void);
+//-------------------------------BORDAS---------------------------------------
+   void bordas(void);
+//------------------------------PAISAGEM--------------------------------------
+   void paisagem(int);
+   
+/*--------------------------CARRO PARA ABERTURA-------------------------------
+X - Coluna inicial, Y - Linha, Z - Coluna Final*/
+   void carro(int, int, int, int);
+//--------------------------APAGAR CARRO ABERTURA-----------------------------
+   void apagar_carro(int, int, int);
+//--------------------------BARRA DE CARREGAMENTO-----------------------------
+   void carregamento(void);
+//------------------------POSIÇÃO DAS BARRAS DE OPÇÃO-------------------------
+   void posicao(int,int *, int *);
+//--------------------------------MENU----------------------------------------
+   void menu(void);
+//-----------------------------TÍTULO DO MENU---------------------------------
+   void titulo_menu(void);
+//--------------OPÇÃO PARA EXIBIR DADOS DE DETERMINADA FUNÇÃO-----------------
+   void opcoes(int);
+   
+/*---------------------------Borda para opções--------------------------------
+| x - coluna | escolha(int op*) - linha | v - coluna final
+*/
+   void borda_op(int, int, int);
+//
+   void borda_apagar(int, int, int);
+//
+   int escolha_borda(int *, int *, int);
+//
+   void cor_fonte_borda(int);
+//
+   void erro(int, int, int, int);
+//
+   void espacamento(int, int, int);
+//
+   char verifica_resp(int);
+//
+   int opcao_modelo(void);
+//
+   void opcao_modelo2(int, int, int);
+   
+   
+//--------------------------------------------------------------------PROCESSAMENTO----------------------------------------------------------------------------
+
+struct cadastro{
+	char codigo[COD];
+	char nome[NOME];
+	char cpf[COD];
+	char email[MOD];
+}c;
+
+struct carro{
+	char codigo[COD];
+	char nome[NOME];
+	char marca[MAR];
+	char modelo[MOD];
+	char tipo[NOME];
+}car;
+
+struct move{
+	int situacao;
+	int identificador;
+	char id[COD];
+	char nomeCliente[NOME];
+	char codCar[COD];
+	char nomeCar[NOME];
+	char tipoCar[NOME];
+	char marcaCar[MAR];
+	char modeloCar[MOD];
+}move,locacao,devolucao;
+
+void Final();
+
+//--------------------------CADASTRO DE CLIENTES------------------------------
+   void cadastro_cliente();
+//
+   void Inclusao_Cliente();   
+//
+   void Alteracao_Cliente();
+//
+   void Exibicao_Cliente();
+//
+   void Exclusao_Cliente();
+//
+   void Nome(char [],int);
+//   
+   void ID_Royale(char [],int);
+//   
+   void CPF(char []);
+//   
+   int validar_CPF(char []);
+//   
+   void Email(char[],int);
+//   
+   int valida_Email(char []);
+//
+   int verifica_Int(char [], int, int);
+//
+   int verifica_String(char [], int, int);
+//
+   int verifica_ID(char [], int, int);
+   
+   
+//--------------------------CADASTRO DE VEICULOS------------------------------
+   void cadastro_veiculos();
+//
+   void Inclusao_Car();
+//
+   void Alteracao_Car();
+//
+   void Consulta_Car();
+//
+   void Exclusao_Car();
+//
+   void Cod_Car(char [],int);
+//
+   void Nome_Car(char [],int);
+//
+   void Marca_Car(char [],int);
+//
+   void Modelo_Car(char [],int);
+//
+   void Tipo_Car(char [],int);
+//
+   int verifica_Tipo(char []);
+  
+//-----------------------------MOVIMENTAÇÃO-----------------------------------
+   void movimentacao();
+//
+   void Devolucao();
+//
+   void Locacao(void);
+//
+   void alugar_Car(void);
+//
+   int identificador(int);
+
+//------------------------------RELATÓRIOS------------------------------------  
+   void Balanco_Acervo(void);
+
+
+
+int main() {
+	system("mode 100,50"); //Função resposável por alterar as medidas da PRUMPT - 100 X 50
+	SetConsoleTitle("Locadora de Veiculos Royale Cars"); //Função resposável por inserir o nome do Título
+	system("color 3F");//Fundo Verde-Azul | Fonte Branco Brilhante
+	
+	//abertura();
+	menu();
+	
+	return 0;
+}
+
+//-----------------------------------------------------------------Interface-----------------------------------------------------------------------------------
+
+void gotoxy(int x, int y){
+	
+    COORD coord;
+    coord.X = (short)x;
+    coord.Y = (short)y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+    
+}
+
+void textcolor (int i){
+	
+	HANDLE hl = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO bufferInfo;
+    BOOL b = GetConsoleScreenBufferInfo(hl, &bufferInfo);
+    bufferInfo.wAttributes &= 0x00F0;
+    SetConsoleTextAttribute (hl, bufferInfo.wAttributes |= i);
+    
+}
+
+void textbackground (int i){
+	
+    HANDLE hl = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO bufferInfo;
+    BOOL b = GetConsoleScreenBufferInfo(hl, &bufferInfo);
+    bufferInfo.wAttributes &= 0x000F;
+    SetConsoleTextAttribute (hl, bufferInfo.wAttributes |= i << 4);
+    
+}
+
+void apagar(){
+	
+	int i,j;
+	
+	for(i=0;i<100;i++){
+		if(i==0 || i%2==0){
+			for(j=0;j<50;j++){
+				gotoxy(i,j);
+				textbackground(3);
+				printf(" ");
+			}
+		}else{
+			for(j=50;j>=0;j--){
+				gotoxy(i,j);
+				textbackground(3);
+				printf(" ");
+			}
+		}
+	}
+	
+}
+
+void bordas(){
+	
+	int i;
+	
+	textcolor(15);
+	
+	//Bordas das Colunas
+	for(i=2;i<48;i++){
+		gotoxy(1,i);
+		printf("%c",186);
+		gotoxy(98,i);
+		printf("%c",186);
+	}
+	//Bordas das linhas
+	for(i=1;i<99;i++){
+		if(i==1){
+			gotoxy(i,1);
+			printf("%c",201);
+			gotoxy(i,48);
+			printf("%c",200);
+		}else if(i==98){
+			gotoxy(i,1);
+			printf("%c",187);
+			gotoxy(i,48);
+			printf("%c",188);
+		}else{
+			gotoxy(i,1);
+			printf("%c",205);
+			gotoxy(i,48);
+			printf("%c",205);
+		}
+	}
+		
+}
+
+void abertura(){
+	int i;
+	
+	bordas();
+	
+	gotoxy(33,25);
+	printf("APERTE QUALQUER BOT%cO PARA CONTINUAR",199);
+	getch();
+	gotoxy(33,25);
+	printf("                                     ");
+	
+	
+	carro(4,6,73,0);
+	
+	textcolor(11);
+	Sleep(50);
+	gotoxy(20,6);
+	printf("___  / ______ _____________ _______/ /______ ______________ _");
+	Sleep(50);
+	gotoxy(20,7);
+	printf("__  /  _  __ \\_  ___/_  __ `/_  __  / _  __ \\__  ___/_  __ `/");
+	Sleep(50);
+	gotoxy(20,8);
+	printf("_  /___/ /_/ // /__  / /_/ / / /_/ /  / /_/ /_  /    / /_/ / ");
+	Sleep(50);
+	gotoxy(20,9);
+	printf("/_____/\\____/ \\___/  \\__,_/  \\__,_/   \\____/ /_/     \\__,_/");
+	textcolor(15);
+	
+	for(i=20;i<81;i++){
+		gotoxy(i,10);
+		Sleep(3);
+		printf("%c",45);
+	}
+	
+	carro(4,11,73,0);
+	
+	textcolor(11);
+	gotoxy(29,11);
+	printf("________                         ______");
+	Sleep(50);
+	gotoxy(29,12);
+	printf("___  __ \\______ _____  ________ ____  /_____");
+	Sleep(50);
+	gotoxy(29,13);
+	printf("__  /_/ /_  __ \\__  / / /_  __ `/__  / _  _ \\");
+	Sleep(50);
+	gotoxy(29,14);
+	printf("_  _, _/ / /_/ / / /_/ / / /_/ /  / /  /  __/");
+	Sleep(50);
+	gotoxy(29,15);
+	printf("/_/ |_|  \\____/  \\__, /  \\__,_/  /_/   \\___/");
+	Sleep(50);
+	gotoxy(29,16);
+	printf("                /____/");
+	textcolor(15);
+	
+	for(i=29;i<74;i++){
+		gotoxy(i,17);
+		Sleep(3);
+		printf("%c",45);
+	}
+	
+	carro(4,18,73,0);
+	
+	textcolor(11);
+	Sleep(50);
+	gotoxy(35,18);
+	printf("_________");
+	Sleep(50);
+	gotoxy(35,19);
+	printf("__  ____/______ _________________");
+	Sleep(50);
+	gotoxy(35,20);
+	printf("_  /     _  __ `/__  ___/__  ___/");
+	Sleep(50);
+	gotoxy(35,21);
+	printf("/ /___   / /_/ / _  /    _(__  )");
+	Sleep(50);
+	gotoxy(35,22);
+	printf("\\____/   \\__,_/  /_/     /____/");
+	textcolor(15);
+	
+ 	for(i=35;i<68;i++){
+		gotoxy(i,23);
+		Sleep(3);
+		printf("%c",45);
+	}
+	
+	
+	carregamento();
+	apagar();
+	
+}
+
+void paisagem(int a){
+	
+	textbackground(3);
+	
+	if(a<21 || a>80){
+		textcolor(6);
+	}else{
+		textcolor(14);
+	}
+	
+	gotoxy(a,24);
+	printf("  _");
+	gotoxy(a,25);
+	printf(" (_)");
+	
+	if(a<21){
+		textcolor(8);
+	}else if(a>20 && a<80){
+		textcolor(14);
+	}else{
+		textcolor(7);
+	}
+	gotoxy(19,27);
+	printf("___");
+	gotoxy(2,28);
+	printf("               _/   \\");
+	gotoxy(2,29);
+	printf("_             /      \\_                                    __                            __");
+	gotoxy(2,30);
+	printf(" \\__    __   /         \\                          _       /  \\__      ___       _       /  \\__");
+	gotoxy(2,31);
+	printf("    \\__/  \\_/__       \\ \\                       _/ \\__   /      \\____/   \\    _/ \\__   /      \\_");
+	gotoxy(2,32);
+	printf("  \\  ___   \\/  \\_      \\ \\               __   _/      \\_/  _/  -   __  -  \\__/      \\_/-   __  -");
+	gotoxy(2,33);
+	printf(" ___/   \\__/   \\ \\__     \\\\__           /  \\_//  _ _ \\  \\     __  /  \\____//     __     --  ");
+	gotoxy(2,34);
+	printf("/  __    \\  /     \\ \\_   _//_\\___     _/    //           \\___/  \\/     __/    ___  ---  -_");
+	gotoxy(2,35);
+	printf("__/_______\\________\\__\\_/________\\_ _/_____/_____________/_______\\____/_________________________");
+	
+}
+
+void carregamento(){
+	
+	int i;
+	
+	textcolor(1);
+	
+	for(i=4;i<96;i++){	
+		if(i==4){
+			gotoxy(i,43);
+			printf("%c",218);
+			gotoxy(i,44);
+			printf("%c",179);
+			gotoxy(i,45);
+			printf("%c",192);
+		}else if(i==95){
+			gotoxy(i,43);
+			printf("%c",191);
+			gotoxy(i,44);
+			printf("%c",179);
+			gotoxy(i,45);
+			printf("%c",217);
+		}else{
+			gotoxy(i,43);
+			printf("%c",196);
+			gotoxy(i,45);
+			printf("%c",196);
+		}
+	}
+	
+	for(i=5;i<95;i++){
+		paisagem(i);
+		if(i % 30 == 0){
+			carro(4,37,73,0);
+		}
+		Sleep(40);
+		gotoxy(i,44);
+		textbackground(9);
+		printf(" ");
+	}
+	
+}
+
+void carro(int x, int y, int z, int t){
+	
+	int aux_y = 0;
+	int aux_x = 0;
+	int aux_z = 0;
+	
+	textbackground(3);
+	textcolor(11);
+	
+	aux_x+=x;
+	aux_y+=y;
+	aux_z+=z;
+	
+	for(;x<=z;x++){
+		y=0;
+		y+=aux_y;
+		gotoxy(x,y);
+		printf("      ___________");
+		y++;
+		gotoxy(x,y);
+		printf("     //   |||   \\\\");
+		y++;
+		gotoxy(x,y);
+		printf("  __//____|||____\\\\____");
+		y++;
+		gotoxy(x,y);
+		textcolor(15);
+		printf("%c",175);
+		textcolor(11);
+		printf("| _|      |       _  ||");
+		y++;
+		gotoxy(x,y);
+		textcolor(15);
+		printf("%c",175);
+		textcolor(11);
+		printf("|/ \\______|______/ \\_||");
+		y++;
+		gotoxy(x,y);
+		printf("  \\_/             \\_/");
+		Sleep(t);
+	}
+	apagar_carro(aux_x,aux_y,aux_z);
+	
+}
+
+void apagar_carro(int x, int y, int z){
+	
+	int aux=0;
+	
+	aux+=y;
+	
+	for(;x<=z;x++){
+		y=0;
+		y+=aux;
+		gotoxy(x,y);
+		printf("                 ");
+		y++;
+		gotoxy(x,y);
+		printf("                   ");
+		y++;
+		gotoxy(x,y);
+		printf("                       ");
+		y++;
+		gotoxy(x,y);
+		printf("                        ");
+		y++;
+		gotoxy(x,y);
+		printf("                        ");
+		y++;
+		gotoxy(x,y);
+		printf("                      ");
+	}
+	
+}
+
+void titulo_menu(){
+	
+	int i;
+	
+	textcolor(11);
+	//TÍTULO
+	gotoxy(12,4);
+	printf("  _   _   _   _   _   _   _   _     _   _     _   _   _   _   _   _   _   _");
+	gotoxy(12,5);
+	printf(" / \\ / \\ / \\ / \\ / \\ / \\ / \\ / \\   / \\ / \\   / \\ / \\ / \\ / \\ / \\ / \\ / \\ / \\");
+	gotoxy(12,6);
+	printf("( L | o | c | a | d | o | r | a ) ( d | e ) ( V | e | %c | c | u | l | o | s )",161);
+	gotoxy(12,7);
+	printf(" \\_/ \\_/ \\_/ \\_/ \\_/ \\_/ \\_/ \\_/   \\_/ \\_/   \\_/ \\_/ \\_/ \\_/ \\_/ \\_/ \\_/ \\_/");
+	gotoxy(27,43);
+	printf("   _   _   _   _   _   _     _   _   _   _");
+	gotoxy(27,44);
+	printf("  / \\ / \\ / \\ / \\ / \\ / \\   / \\ / \\ / \\ / \\");
+	gotoxy(27,45);
+	printf(" ( R | o | y | a | l | e ) ( C | a | r | s )");
+	gotoxy(27,46);
+	printf("  \\_/ \\_/ \\_/ \\_/ \\_/ \\_/   \\_/ \\_/ \\_/ \\_/");
+		
+	textcolor(15);
+	
+	gotoxy(10,3);
+	printf("%c",201);
+	gotoxy(10,8);
+	printf("%c",200);
+	gotoxy(90,3);
+	printf("%c",187);
+	gotoxy(90,8);
+	printf("%c",188);
+	
+	for(i=4;i<8;i++){
+		if(i==5){
+			gotoxy(10,i);
+			printf("%c",185);
+			gotoxy(90,i);
+			printf("%c",204);
+		}else{
+			gotoxy(10,i);
+			printf("%c",186);
+			gotoxy(90,i);
+			printf("%c",186);
+		}
+	}
+	
+	gotoxy(26,42);
+	printf("%c",201);
+	gotoxy(26,47);
+	printf("%c",200);
+	gotoxy(72,42);
+	printf("%c",187);
+	gotoxy(72,47);
+	printf("%c",188);
+	
+	for(i=43;i<47;i++){
+		if(i==44){
+			gotoxy(26,i);
+			printf("%c",185);
+			gotoxy(72,i);
+			printf("%c",204);
+		}else{
+			gotoxy(26,i);
+			printf("%c",186);
+			gotoxy(72,i);
+			printf("%c",186);
+		}
+	}
+	
+	gotoxy(8,5);
+	printf("%c",201);
+	gotoxy(92,5);
+	printf("%c",187);	
+	gotoxy(8,44);
+	printf("%c",200);
+	gotoxy(92,44);
+	printf("%c",188);
+	gotoxy(9,5);
+	printf("%c",205);
+	gotoxy(91,5);
+	printf("%c",205);
+	
+	for(i=6;i<44;i++){
+		gotoxy(8,i);
+		printf("%c",186);
+		gotoxy(92,i);
+		printf("%c",186);
+	}
+	
+	for(i=9;i<92;i++){
+		if(i<26 || i>72){
+			gotoxy(i,44);
+			printf("%c",205);
+		}
+	}
+	
+}
+
+void menu(){
+	
+	int op=1,aux=0, y=12, w;
+
+	borda_op(29,y,72);
+	
+	while(1)
+	{
+		opcoes(1);
+		aux=0;
+		posicao(5,&op,&aux);
+		y = escolha_borda(&op, &w, y);
+		borda_op(29,y,72);
+		if(aux==0){
+			borda_apagar(29,w,72);
+		}
+		
+		if(aux==1){
+			switch(op){
+				case 1:
+					apagar();
+					//função cadastro de clientes
+					cadastro_cliente();
+					break;
+				case 2:
+					apagar();
+					//função cadastro de veículos
+					cadastro_veiculos();
+					break;
+				case 3:
+					apagar();
+					//função de movimentação
+					movimentacao();
+					break;
+				case 4:
+					apagar();
+					//função de relatório
+					Balanco_Acervo();
+					break;
+				case 5:
+					apagar();
+					carro(4,20,73, 1);
+					exit(1);
+			}
+		}
+		
+	}
+	
+}
+
+void opcoes(int a){
+	
+	bordas();
+	titulo_menu();
+	
+	gotoxy(10,46);
+	system ("date /t");
+	espacamento(10,46,20);
+	
+	gotoxy(83,46);
+	system ("time /t");
+	espacamento(83,46,88);
+	
+	if(a==1){
+		gotoxy(41,12);
+		printf("CADASTRO DE CLIENTES");
+		gotoxy(41,18);
+		printf("CADASTRO DE VE%cCULOS",214);
+		gotoxy(45,24);
+		printf("MOVIMENTA%c%cO",128,199);
+		gotoxy(46,30);
+		printf("RELAT%cRIOS",224);
+		gotoxy(46,36);
+		printf("FINALIZAR");
+	}else if(a==2 || a==7){
+		gotoxy(46,12);
+		printf("INCLUS%cO",199);
+		gotoxy(46,18);
+		printf("ALTERA%c%cO",128,199);
+		gotoxy(46,24);
+		printf("CONSULTA");
+		gotoxy(46,30);
+		printf("EXCLUS%cO",199);
+		gotoxy(46,36);
+		printf("RETORNAR");
+	}else if(a==3 || a==4 || a==6){
+		//INCLUSÃO DE DADOS DO CLIENTE
+		if(a==3){
+			gotoxy(45,11);
+			printf("INCLUS%cO",199);
+		}else if(a==4){
+			gotoxy(45,11);
+			printf("ALTERA%c%cO",128,199);
+		}else{
+			gotoxy(45,11);
+			printf("EXCLUS%cO",199);
+		}
+		
+		textcolor(15);
+		gotoxy(12,15);
+		printf("ID-ROYALE:");
+		espacamento(12,15,80);
+		
+		gotoxy(12,20);
+		printf("NOME:");
+		espacamento(12,20,80);
+	
+		gotoxy(12,25);
+		printf("CPF:");
+		espacamento(12,25,80);
+		
+		gotoxy(12,30);
+		printf("E-MAIL:");
+		espacamento(12,30,80);
+		
+	}else if(a==5){
+		//CONSULTA CLIENTES
+	}else if(a==8){
+		//INCLUSÃO DE DADOS DO VEÍCULO
+		gotoxy(45,11);
+		printf("INCLUS%cO",199);
+		
+		gotoxy(12,15);
+		printf("ID-VE%cCULO:",214);
+		espacamento(12,15,80);
+		
+		gotoxy(12,20);
+		printf("NOME:");
+		espacamento(12,20,80);
+	
+		gotoxy(12,25);
+		printf("MARCA:");
+		espacamento(12,25,80);
+		
+		gotoxy(12,30);
+		printf("TIPO:");
+		
+		gotoxy(12,35);
+		printf("MODELO:");
+		espacamento(12,35,80);
+		
+	}else if(a==9 || a==11){
+		if(a==9){
+			gotoxy(45,11);
+			printf("ALTERA%c%cO",128,199);
+		}else if(a==11){
+			gotoxy(45,11);
+			printf("EXCLUS%cO",199);
+		}
+		
+		gotoxy(12,15);
+		printf("ID-VE%cCULO:",214);
+		espacamento(12,15,80);
+		
+		gotoxy(12,20);
+		printf("NOME:");
+		espacamento(12,20,80);
+	
+		gotoxy(12,25);
+		printf("MARCA:");
+		espacamento(12,25,80);
+		
+		gotoxy(12,30);
+		printf("TIPO:");
+		espacamento(12,30,80);
+		
+		gotoxy(12,35);
+		printf("MODELO:");
+		espacamento(12,35,80);
+		
+	}if(a==10){
+		//consulta veiculos
+	}else if(a==12){
+		gotoxy(47,18);
+		printf("LOCA%c%cO",128,199);
+		gotoxy(46,24);
+		printf("DEVOLU%c%cO",128,199);
+		gotoxy(47,30);
+		printf("RETORNAR");
+	}else if(a==13){
+		//Locacao
+		
+	}else if(a==14){
+		//Devolucao
+	}else if(a==15){
+		gotoxy(43,18);
+		printf("BALAN%cO DO ACERVO",128);
+		gotoxy(40,24);
+		printf("BALAN%cO DE MOVIMENTA%c%cES",128,128,229);
+		gotoxy(46,30);
+		printf("RETORNAR");
+	}else if(a==16){
+		//balanco do acervo
+	}else if(a==17){
+		//balanco de movimentacoes
+	}
+	
+}
+
+void erro(int a,int y, int z){
+	
+	textcolor(11);
+	gotoxy(40,39);
+	
+	if(a==1){
+		printf("DIGITE APENAS N%cMEROS",233);
+	}else if(a==2){
+		printf("CAMPO OBRIGAT%cRIO",224);
+	}else if(a==3){
+		printf("INV%cLIDO",181);
+	}else if(a==4){
+		printf("DIGITE APENAS LETRAS");
+	}else if(a==5){
+		printf("ID J%c EXISTENTE",181);
+	}
+	
+	Sleep(500);
+	gotoxy(40,39);
+	printf("                           ");
+	gotoxy(z,y);
+	printf("                                                                  ");
+	
+	gotoxy(z,y); 
+}
+
+void espacamento(int x, int y, int z){
+	
+	for(;x<z;x++){
+		gotoxy(x,y+1);
+		printf("%c",196);
+	}
+	
+}
+
+void cadastro_cliente(){
+	
+	int op=1, y=12, aux, w;
+
+	opcoes(2);
+	borda_op(29,y,72);
+	
+	while(1)
+	{
+		aux=0;
+		Sleep(100);
+		posicao(5,&op,&aux);
+		y = escolha_borda(&op, &w, y);
+		borda_op(29,y,72);
+		
+		if(aux==0){
+			borda_apagar(29,w,72);
+		}
+		
+		if(aux==1){
+			switch(op){
+				case 1:
+					apagar();
+					//função inclusão de clientes
+					Inclusao_Cliente(); 
+					break;
+				case 2:
+					apagar();
+					//função de alteração de Clientes
+					Alteracao_Cliente();
+					break;
+				case 3:
+					apagar();
+					//função de consuta de Clientes
+					Exibicao_Cliente();
+					break;
+				case 4:
+					apagar();
+					//função de exclusão de clientes
+					Exclusao_Cliente();
+					break;
+				case 5:
+					apagar();
+					menu();
+					break;
+			}
+		}
+			
+	}
+		
+}
+
+void cadastro_veiculos(){
+	
+	int op=1,aux, y=12, w;
+	
+	opcoes(7);
+	borda_op(29,y,72);
+	
+	while(1)
+	{
+		aux=0;
+		Sleep(100);
+		posicao(5,&op,&aux);
+		y = escolha_borda(&op, &w, y);
+		borda_op(29,y,72);
+		if(aux==0){
+			borda_apagar(29,w,72);
+		}
+		
+		if(aux==1){
+			switch(op){
+				case 1:
+					apagar();
+					//função de inclusão de carros
+					Inclusao_Car();
+					break;
+				case 2:
+					apagar();
+					//função de alteração de carros
+					Alteracao_Car();
+					break;
+				case 3:
+					apagar();
+					//função de Consulta de carros
+					Consulta_Car();;
+					break;
+				case 4:
+					apagar();
+					//função de exclusão de carros
+					Exclusao_Car();
+					break;
+				case 5:
+					apagar();
+					menu();
+			}
+		}
+			
+	}
+	
+}
+
+void movimentacao(){
+	int op=2, y=18,aux, w;
+	
+	opcoes(12);
+	borda_op(29,y,72);
+	
+	while(1)
+	{
+		aux=0;
+		Sleep(100);
+		posicao(3,&op,&aux);
+		y = escolha_borda(&op, &w, y);
+		borda_op(29,y,72);
+		if(aux==0){
+			borda_apagar(29,w,72);
+		}
+				
+		if(aux==1){
+			switch(op){
+				case 2:
+					apagar();
+					//função de locação de carros
+					Locacao();
+					break;
+				case 3:
+					apagar();
+					//função de Devolução de carros
+					Devolucao();
+					break;
+				case 4:
+					apagar();
+					menu();
+			}
+		}
+			
+	}
+	
+}
+
+void locacao_movimentacao(){
+	opcoes(13);
+}
+
+void devolucao_movimentacao(){
+	opcoes(14);
+}
+
+void balanco_acervo_relatorios(){
+	opcoes(16);
+}
+
+void balanco_movimentacao_relatorios(){
+	opcoes(17);
+}
+
+void posicao(int a,int *op, int *aux){
+	
+	char escolha;
+	
+	escolha = getch();
+	
+	if(a==3){
+		switch(escolha){
+			case ENTER:
+				*aux=1;
+				break;
+			case CIMA:
+				if(*op==2){
+					*op=4;
+				}else{
+					*op-=1;
+				}
+				break;
+			case BAIXO:
+				if(*op==4){
+					*op=2;
+				}else{
+					*op+=1;
+				}
+				break;
+				
+			default:
+				*aux = 2;
+		}
+	}else if(a==5){	
+		switch(escolha){
+			case ENTER:
+				*aux=1;
+				break;
+				
+			case CIMA:
+				if(*op==1){
+					*op=5;
+				}else{
+					*op-=1;
+				}
+			break;
+			
+			case BAIXO:
+				if(*op==5){
+					*op=1;
+				}else{
+					*op+=1;
+				}
+			break;
+			
+			default:
+				*aux = 2;
+		}
+	}
+	
+}
+
+int escolha_borda(int *op, int *w, int y){
+	
+	*w=y;
+	
+	if(*op==1){
+		return 12;
+	}else if(*op==2){
+		return 18;
+	}else if(*op==3){
+		return 24;
+	}else if(*op==4){
+		return 30;
+	}else if(*op==5){
+		return 36;
+	}
+	
+}
+
+void borda_apagar(int x, int y, int v){
+	
+	y-=1;
+	gotoxy(x,y);
+	printf(" ");
+	gotoxy(v,y);
+	printf(" ");
+	y+=2;
+	gotoxy(x,y);
+	printf(" ");
+	gotoxy(v,y);
+	printf(" ");
+	y-=1;
+	gotoxy(x,y);
+	printf(" ");
+	gotoxy(v,y);
+	printf(" ");	
+	x+=1;
+	
+	for(;x<v;x++){
+		gotoxy(x,y-1);
+		printf(" ");
+		gotoxy(x,y+1);
+		printf(" ");
+	}
+	
+}
+
+void borda_op(int x, int y, int v){
+	
+	textcolor(15);
+	
+	y-=1;
+	gotoxy(x,y);
+	printf("%c",201);
+	gotoxy(v,y);
+	printf("%c",187);
+	y+=2;
+	gotoxy(x,y);
+	printf("%c",200);
+	gotoxy(v,y);
+	printf("%c",188);
+	y-=1;
+	gotoxy(x,y);
+	printf("%c",186);
+	gotoxy(v,y);
+	printf("%c",186);	
+	x+=1;
+	
+	for(;x<v;x++){
+		gotoxy(x,y-1);
+		printf("%c",205);
+		gotoxy(x,y+1);
+		printf("%c",205);
+	}
+	
+}
+
+char verifica_resp(int a){
+	
+	int c;
+	
+	if(a==1){
+		gotoxy(38,24);
+		printf("DESEJA SALVAR OS DADOS?");		
+	}else if(a==2){
+		gotoxy(42,24);
+		printf("NOVA INCLUS%cO?",198);
+	}else if(a==3){
+		gotoxy(44,38);
+		printf("DESEJA ALTERAR?");
+	}else if(a==4){
+		gotoxy(43,24);
+		printf("NOVA ALTERA%c%cO?",128,199);
+	}else if(a==5){
+		gotoxy(43,38);
+		printf("DESEJA EXCLUIR?");		
+	}else if(a==6){
+		gotoxy(40,24);
+		printf("NOVA EXCLUS%cO?",199);
+	}else if(a==7){
+		gotoxy(38,38);
+		printf("DESEJA ALOCAR ESTE VE%cCULO?",214);
+	}else if(a==8){
+		gotoxy(41,24);
+		printf("DESEJA ALOCAR NOVAMENTE?");
+	}else if(a==9){
+		gotoxy(37,38);
+		printf("DESEJA DEVOLVER ESTE VE%cCULO?",214);
+	}else if(a==10){
+		gotoxy(37,24);
+		printf("DESEJA DEVOLVER OUTRO VE%cCULO?",214);
+	}
+	
+	if(a==3 || a==5 || a==7){
+		gotoxy(48,39);
+	}else{
+		gotoxy(46,25);
+	}
+	printf("(S/N):  ");
+	
+	while(1){
+		c=getch();
+		if(c=='n' || c=='N' || c=='s' || c=='S'){
+			return c;
+			
+		}else{
+			if(a==3 || a==5){
+				gotoxy(56,39);
+			}else{
+				gotoxy(54,25);
+			}
+			printf(" ");
+		}
+	}
+	
+}
+
+int opcao_modelo1(){
+	int op=1,a=15,b=1,c=1;
+	char esc;
+	
+	opcao_modelo2(a,b,c);
+	
+	while(esc!=ENTER){
+	esc = getch();
+	
+		switch(esc){
+			case ENTER:
+					if(a==15 && b==1 && c==1){
+						return 1;
+					}else if(a==1 && b==15 && c==1){
+						return 2;
+					}else if(a==1 && b==1 && c==15){
+						return 3;
+					}
+					
+				break;
+			case DIR:
+				if(op==1){
+					opcao_modelo2(1,15,1);
+					op++;
+					a=1; b=15; c=1;
+				}else if(op==2){
+					opcao_modelo2(1,1,15);
+					op++;
+					a=1; b=1; c=15;
+				}else if(op==3){
+					opcao_modelo2(15,1,1);
+					op=1;
+					a=15; b=1; c=1;
+				}
+				break;
+				
+			case ESQ:
+				if(op==1){
+					opcao_modelo2(1,1,15);
+					op=3;
+					a=1; b=1; ;c=15;
+				}else if(op==2){
+					opcao_modelo2(15,1,1);
+					op--;
+					a=15; b=1; c=1;
+				}else if(a==3){
+					opcao_modelo2(1,15,1);
+					op--;
+					a=1; b=15; c=1;
+				}
+				break;
+				
+			default:
+				
+				opcao_modelo2(a,b,c);
+				break;
+		}
+	}
+}
+
+void opcao_modelo2(int a, int b, int c){
+	
+	int i,j;
+	
+	if(a==15 && b==1 && c==1){
+		textcolor(a);
+		gotoxy(20,28);
+		printf("   ____");
+		gotoxy(20,29);
+		printf(" _/  | \\__");
+		gotoxy(20,30);
+		printf("[ POPULAR ]");
+		gotoxy(20,31);
+		printf(" (_)---(_)");
+	
+		textcolor(b);
+		
+		gotoxy(37,28);
+		printf("   ____");
+		gotoxy(37,29);
+		printf(" _/  | \\__");
+		gotoxy(37,30);
+		printf("[   LUXO  ]");
+		gotoxy(37,31);
+		printf(" (_)---(_)");
+	
+		gotoxy(54,28);
+		printf("   ____");
+		gotoxy(54,29);
+		printf(" _/  | \\__");
+		gotoxy(54,30);
+		printf("[   VAN   ]");
+		gotoxy(54,31);
+		printf(" (_)---(_)");
+	
+	}else if(a==1 && b==15 && c==1){
+		textcolor(a);
+	
+		gotoxy(20,28);
+		printf("   ____");
+		gotoxy(20,29);
+		printf(" _/  | \\__");
+		gotoxy(20,30);
+		printf("[ POPULAR ]");
+		gotoxy(20,31);
+		printf(" (_)---(_)");
+		
+		textcolor(b);
+		
+		gotoxy(37,28);
+		printf("   ____");
+		gotoxy(37,29);
+		printf(" _/  | \\__");
+		gotoxy(37,30);
+		printf("[   LUXO  ]");
+		gotoxy(37,31);
+		printf(" (_)---(_)");
+		
+		textcolor(c);
+	
+		gotoxy(54,28);
+		printf("   ____");
+		gotoxy(54,29);
+		printf(" _/  | \\__");
+		gotoxy(54,30);
+		printf("[   VAN   ]");
+		gotoxy(54,31);
+		printf(" (_)---(_)");
+		
+	}else if(a==1 && b==1 && c==15){
+		textcolor(a);
+		
+		gotoxy(20,28);
+		printf("   ____");
+		gotoxy(20,29);
+		printf(" _/  | \\__");
+		gotoxy(20,30);
+		printf("[ POPULAR ]");
+		gotoxy(20,31);
+		printf(" (_)---(_)");
+		
+		gotoxy(37,28);
+		printf("   ____");
+		gotoxy(37,29);
+		printf(" _/  | \\__");
+		gotoxy(37,30);
+		printf("[   LUXO  ]");
+		gotoxy(37,31);
+		printf(" (_)---(_)");
+		
+		textcolor(c);
+	
+		gotoxy(54,28);
+		printf("   ____");
+		gotoxy(54,29);
+		printf(" _/  | \\__");
+		gotoxy(54,30);
+		printf("[   VAN   ]");
+		gotoxy(54,31);
+		printf(" (_)---(_)");
+	
+}
+	
+}
+
+
+//--------------------------------------------------------------------PROCESSAMENTO----------------------------------------------------------------------------
+
+//---------------------------Cadastro de Clientes-----------------------------
+
+void Inclusao_Cliente(){
+	opcoes(3);
+	
+	char resp;
+	char resp1;
+	
+	gotoxy(23,15);
+	textcolor(11);
+	fflush(stdin);
+	ID_Royale(c.codigo,COD); //ID royale do Cliente
+	
+	gotoxy(18,20);
+	textcolor(11);
+	fflush(stdin);
+	Nome(c.nome,NOME); //Nome do Cliente
+	
+	gotoxy(17,25);
+	textcolor(11);
+	fflush(stdin);
+	CPF(c.cpf);  //CPF do Cliente
+	
+	gotoxy(20,30);
+	textcolor(11);
+	fflush(stdin);
+	Email(c.email,MOD); //email do cliente
+	
+	system("cls");
+	resp = verifica_resp(1);
+	system("cls");
+	
+	if(resp == 's' || resp == 'S'){
+		FILE *ark;
+		ark=fopen("File.bin","ab");
+		
+		//verificar se o arquivo foi criado
+		if(ark == NULL){
+			printf("ERRO AO SALVAR ARQUIVO\n");
+			system("Cls");
+			exit(1);
+		}
+		else{
+			//escreve no arquivo
+			fwrite(&c,sizeof(c),1,ark);
+			fclose(ark);
+		}
+
+		resp1 = verifica_resp(2);
+		//repete a operação
+		
+		if(resp1 == 'S' || resp1 == 's'){
+			system("Cls");
+			Inclusao_Cliente();
+			
+		}else{
+			system("Cls");
+			cadastro_cliente();
+		}	
+	}else if(resp == 'n' || resp == 'N'){
+			system("Cls");
+			cadastro_cliente();
+		}
+	
+}
+
+void Alteracao_Cliente(){
+	
+	FILE *ark;
+	ark=fopen("File.bin","rb");
+	char id[12];
+	char resp,resp1,resp2;
+	int i=0;
+	
+	if(ark == NULL){
+		printf("ERRO AO ABRIR ARQUIVO\n");
+		system("Cls");
+		exit(1);
+	}
+	
+	bordas();
+	
+	gotoxy(36,21);
+	printf("INFORME O ID QUE DESEJA ALTERAR");
+	borda_op(19,25,80);
+	gotoxy(20,25);
+	
+	fflush(stdin);
+	gets(id);
+	fflush(stdin);
+	
+	//verifica se o código digitado existe nos arquivos 
+	while(fread(&c,sizeof(c),1,ark)){
+		if(strcmp(id,c.codigo)==0){
+			i++;
+			break;
+		}
+	}
+	
+	system("cls");
+	//Verificar se há um ID já existente
+	if(i==0){
+		gotoxy(44,23);
+		printf("ID N%cO ENCONTRADO",199);
+		gotoxy(34,25);
+		printf("APERTE QUALQUER BOT%cO PARA RETORNAR", 199);
+		getchar();
+		system("cls");
+		cadastro_cliente();
+	}
+	
+	opcoes(4);
+	
+	//imprime os dados do cliente
+	gotoxy(23,15);
+	textcolor(11);
+	puts(c.codigo);
+	
+	gotoxy(18,20);
+	textcolor(11);
+	puts(c.nome);
+	
+	gotoxy(17,25);
+	textcolor(11);
+	puts(c.cpf);
+	
+	gotoxy(20,30);
+	textcolor(11);
+	puts(c.email);
+	
+	resp = verifica_resp(3);
+    system("cls");
+	
+	//Criar função para analisar resposta
+	if(resp == 's' || resp == 'S'){
+		opcoes(4);
+		
+		gotoxy(23,15);
+		textcolor(11);
+		fflush(stdin);
+		ID_Royale(c.codigo,COD);
+	
+		gotoxy(18,20);
+		textcolor(11);
+		fflush(stdin);
+		Nome(c.nome,NOME);
+	
+		gotoxy(17,25);
+		textcolor(11);
+		fflush(stdin);
+		CPF(c.cpf);
+		
+		gotoxy(20,30);
+		textcolor(11);
+		fflush(stdin);
+		Email(c.email,MOD);
+		
+		system("cls");
+		resp1 = verifica_resp(1);
+		system("cls");
+	
+		if(resp1 == 's' || resp1 == 'S'){
+			FILE *arkaux;
+			arkaux=fopen("FileAUX.bin","ab");
+			rewind(ark);
+	
+			//verificar se o arquivo foi criado
+			if(arkaux == NULL){
+				printf("ERRO AO ABRIR ARQUIVO\n");
+				system("Cls");
+				exit(1);	
+			}else{
+				//execução da alteração
+				fwrite(&c,sizeof(c),1,arkaux);
+				while(fread(&c,sizeof(c),1,ark)==1){
+					if(strcmp(id,c.codigo) != 0){
+						fwrite(&c,sizeof(c),1,arkaux);
+						}
+				}
+			}
+			
+			//fecha os arquivos	
+			fclose(ark);
+			fclose(arkaux);
+			remove("File.bin");
+			rename("FileAUX.bin","File.bin");
+			
+			resp2 = verifica_resp(4);
+			system("cls");
+			
+			if(resp2 == 'S' || resp2 == 's'){
+				Alteracao_Cliente();	
+			}else if(resp2 == 'n' || resp2 == 'N'){
+				cadastro_cliente();
+			}
+			
+		}else if(resp1 == 'n' || resp1 == 'N'){
+			cadastro_cliente();
+		}
+		
+	}else if(resp == 'n' || resp == 'N'){
+		cadastro_cliente();
+	}
+	
+}
+
+void Exibicao_Cliente(){
+	int y =5;
+	
+	FILE *ark;
+	ark=fopen("File.bin","rb");
+	
+	bordas();
+	
+	if(ark==NULL){
+		printf("ERRO AO SALVAR ARQUIVO\n");
+		system("Cls");
+		exit(1);
+	}else{
+		while(fread(&c,sizeof(c),1,ark)){
+		//imprime os dados do cliente
+		textcolor(15);
+		gotoxy(12,y);
+		printf("ID-ROYALE: ");
+		textcolor(11);
+		gotoxy(23,y);
+		puts(c.codigo);
+		
+		y++;
+		
+		textcolor(15);
+		gotoxy(12,y);
+		printf("NOME: ");
+		textcolor(11);
+		gotoxy(18,y);
+		puts(c.nome);
+		y++;
+		
+		textcolor(15);
+		gotoxy(12,y);
+		printf("CPF: ");
+		textcolor(11);
+		gotoxy(17,y);
+		puts(c.cpf);
+		y++;
+		
+		textcolor(15);
+		gotoxy(12,y);
+		printf("E-MAIL: ");
+		textcolor(11);
+		gotoxy(20,y);
+		puts(c.email);
+		
+		espacamento(12,y,80);
+		y+=3;
+		
+		if(y>40){
+			y=5;
+			getch();
+			system("cls");
+			bordas();
+		}
+		
+		}
+	}
+	
+	//fecha os arquivos
+	fclose(ark);
+	getch();
+	system("CLS");
+	cadastro_cliente();
+	
+}
+
+void Exclusao_Cliente(){
+	
+	char id[12];
+	char resp,resp1;
+	int i=0;
+	//abre o arquivo de cliente
+	FILE *ark;
+	ark=fopen("File.bin","rb"); 
+	
+	//verifica se existe o arquivo
+	if(ark == NULL){
+		printf("ERRO AO ABRIR ARQUIVO\n");
+		system("Cls");
+		exit(1);
+	}
+	
+	gotoxy(36,21);
+	printf("INFORME O ID QUE DESEJA EXCLUIR");
+	borda_op(19,25,80);
+	gotoxy(20,25);
+	
+	fflush(stdin);
+	gets(id);
+	fflush(stdin);
+	system("cls");
+	
+	//verifica se o código digitado existe nos arquivos
+	while(fread(&c,sizeof(c),1,ark)==1){
+		if(strcmp(id,c.codigo)==0){
+			i++;
+			break;
+		}
+	}
+	
+	if(i==0){
+		gotoxy(44,23);
+		printf("ID N%cO ENCONTRADO",199);
+		gotoxy(34,25);
+		printf("APERTE QUALQUER BOT%cO PARA RETORNAR", 199);
+		getchar();
+		system("cls");
+		cadastro_cliente();
+	}
+	
+	opcoes(6);
+	
+	gotoxy(23,15);
+	textcolor(11);
+	puts(c.codigo);
+	
+	gotoxy(18,20);
+	textcolor(11);
+	puts(c.nome);
+	
+	gotoxy(17,25);
+	textcolor(11);
+	puts(c.cpf);
+	
+	gotoxy(17,30);
+	textcolor(11);
+	puts(c.email);
+	
+	resp = verifica_resp(5);
+	system("cls");
+
+	if(resp == 's' || resp == 'S'){
+		//abre o arquivo auxiliar
+		FILE *arkaux;
+		arkaux=fopen("FileAUX.bin","ab");
+		rewind(ark);
+		
+		//verifica se o arquivo existe
+		if(arkaux == NULL){
+			printf("ERRO AO ABRIR ARQUIVO\n");
+			system("Cls");
+			exit(1);
+		}else{
+			//execução da exclusão
+			while(fread(&c,sizeof(c),1,ark)){
+				if(strcmp(id,c.codigo)!=0){
+					fwrite(&c,sizeof(c),1,arkaux);
+				}
+			}
+		}
+				
+		fclose(ark);
+		fclose(arkaux);
+		remove("File.bin");
+		rename("FileAUX.bin","File.bin");
+
+		resp1 = verifica_resp(6);
+		system("cls");
+				
+		if(resp1 == 'S' || resp1 == 's'){
+			Exclusao_Cliente();
+		}else{
+			cadastro_cliente();
+		}		
+	}else
+		if(resp == 'n' || resp == 'N'){
+			cadastro_cliente();
+		}
+}
+
+void ID_Royale(char ID[],int tam){
+	
+	int validar, tamanho, verif;
+	int y=15;
+	
+	textcolor(11);
+	
+	do{
+		fflush(stdin);
+		gets(ID);
+		fflush(stdin);
+		tamanho=strlen(ID);
+		validar=verifica_Int(ID,tam,tamanho);
+		//verif=verifica_ID(ID,tam,tamanho);
+		
+		if(ID[0]=='\0'){
+			erro(2,y,23);
+		}else if(validar==0){
+			erro(1,y,23);
+		}else if(verif==1){
+			erro(5,y,23);
+		}
+		
+	}while(ID[0] == '\0' || validar == 0 || verif == 1);
+}
+
+void Nome(char nome[],int tam){
+	
+	int tamanho, verif;
+	int y=20;
+	
+	textcolor(11);
+	
+	do{
+		fflush(stdin);
+		gets(nome);
+		fflush(stdin);
+		tamanho=strlen(nome);
+		verif=verifica_String(nome,tam,tamanho);
+		
+		if(nome[0]=='\0'){
+			erro(2,y,18);
+		}else if(verif==0){
+			erro(4,y,18);
+		}
+		else if(tamanho>tam){
+			erro(3,y,18);
+		}
+		
+	}while(tamanho > tam || nome[0] == '\0' || verif == 0);	
+	
+}
+
+void CPF(char cpf[]){
+	
+	int validar;
+	int y=25;
+	
+	textcolor(11);
+	
+	do{
+		fflush(stdin);
+		gets(cpf);
+		fflush(stdin);
+		validar=validar_CPF(cpf);
+		
+		if(cpf[0]=='\0'){
+			erro(2,y,17);
+		}else if(validar == 0){
+			erro(3,y,17);
+		}
+		
+	}while(cpf == '\0' || validar == 0);
+}
+
+int validar_CPF(char cpf[]){
+	
+    int i, j, digito1 = 0, digito2 = 0;
+    
+    if(strlen(cpf) != 11)
+        return 0;
+    else if((strcmp(cpf,"00000000000") == 0) || (strcmp(cpf,"11111111111") == 0) || (strcmp(cpf,"22222222222") == 0) ||
+            (strcmp(cpf,"33333333333") == 0) || (strcmp(cpf,"44444444444") == 0) || (strcmp(cpf,"55555555555") == 0) ||
+            (strcmp(cpf,"66666666666") == 0) || (strcmp(cpf,"77777777777") == 0) || (strcmp(cpf,"88888888888") == 0) ||
+            (strcmp(cpf,"99999999999") == 0))
+        return 0; ///se o CPF tiver todos os números iguais ele é inválido.
+    else
+    {
+        ///digito 1---------------------------------------------------
+        for(i = 0, j = 10; i < strlen(cpf)-2; i++, j--) ///multiplica os números de 10 a 2 e soma os resultados dentro de digito1
+            digito1 += (cpf[i]-48) * j;
+        digito1 %= 11;
+        if(digito1 < 2)
+            digito1 = 0;
+        else
+            digito1 = 11 - digito1;
+        if((cpf[9]-48) != digito1)
+            return 0; ///se o digito 1 não for o mesmo que o da validação CPF é inválido
+        else
+        ///digito 2--------------------------------------------------
+        {
+            for(i = 0, j = 11; i < strlen(cpf)-1; i++, j--) ///multiplica os números de 11 a 2 e soma os resultados dentro de digito2
+                    digito2 += (cpf[i]-48) * j;
+        digito2 %= 11;
+        if(digito2 < 2)
+            digito2 = 0;
+        else
+            digito2 = 11 - digito2;
+        if((cpf[10]-48) != digito2)
+            return 0; ///se o digito 2 não for o mesmo que o da validação CPF é inválido
+        }
+    }
+    return 1;
+}
+
+void Email(char email[],int tam){
+	
+	int tamanho;
+	int verif;
+	int y=30;
+
+	do{
+		fflush(stdin);
+		gets(email); //ler o email
+		fflush(stdin);
+		tamanho=strlen(email); //verificar o tamanho
+		verif=valida_Email(email); //validar o email
+		
+		if(tamanho>tam){
+			erro(3,y,20); 
+		}else if(email[0]=='\0'){
+			erro(2,y,20);
+		}else if(verif==0){
+			erro(3,y,20);
+		}
+		
+	}while(tamanho>tam || email[0]=='\0' || verif==0);	
+	
+}
+
+int verifica_Int(char cod[],int tam, int tam1){
+	
+	int i;
+	
+	for(i = 0; i < tam1; i++){	
+		if(isdigit(cod[i])){  //verifica se cada caracter é um número
+			if(tam < tam1){  
+				return 1;
+			}
+		}
+		else{
+			return 0;
+		}
+	}
+}
+
+int verifica_String(char nome[],int tam,int tam1){
+	
+	int i;
+	
+	for(i=0;i<tam1;i++){
+		if(isalpha(nome[i]) || isspace(nome[i])){ //verifica se cada caracter é uma letra e um espaço
+			if(tam < tam1){
+				return 1;
+			}
+		}else{
+			return 0;
+		}
+	}
+}
+
+int verifica_ID(char id[],int tam,int tam1){
+	FILE *ark;
+	ark=fopen("File.bin","rb");
+	
+	int i=0;
+	
+	while(fread(&c,sizeof(c),1,ark)){
+		if(strcmp(id,c.codigo)==0){
+			i++;
+		}
+	}
+	
+	if(i==0){
+		return 0;
+	}else{
+		return 1;
+	}
+	
+	fclose(ark);
+}
+
+int valida_Email(char email[]){
+	
+	int cont = 0,aux = 0,i;
+	int veri= 0;
+	char tipo[15];
+	
+	
+	for(aux = 0,cont = 0;email[aux] != '@' || '\0' ;aux++){
+		cont++;
+	}
+		if(email[aux] == '@'){
+			veri++;
+		}
+		
+		if(veri == 1){
+			for(i = 0;email[aux] != '\0';aux++,i++){
+				tipo[i] = email[aux];
+			}	
+
+			if(strcmp(tipo,"@gmail.com") == 0 || strcmp(tipo,"@hotmail.com") == 0 || strcmp(tipo,"@outlook.com") == 0){
+				veri++;
+			}
+		}
+	
+		if(cont >= 6 && veri == 2){
+			return 1;
+		}else{
+			return 0;
+		}
+}
+
+void Tipo_Car(char tipo[],int tam){
+	
+	int tamanho;
+	int verif;
+	int valida;
+	int y = 30;
+	
+	do{
+		fflush(stdin);
+		gets(tipo);
+		fflush(stdin);
+		tamanho=strlen(tipo);
+		valida=verifica_String(tipo,tam,tamanho);
+		verif=verifica_Tipo(tipo);
+		
+		if(verif==0){
+			printf("Permitidos: Luxo, Popular e Vam\n");
+		}
+		if(valida == 0){
+			erro(4,y,18);
+		}
+		if(tipo[0]=='\0'){
+			printf("CAMPO OBRIGAT%cRIO!",224);
+		}
+		if(tamanho>tam){
+			printf("INV%cLIDO",181);
+		}
+		
+	}while(tamanho>tam || tipo[0]=='\0' || valida==0 || verif==0);
+	
+}
+
+int verifica_Tipo(char tipo[]){
+	int i;
+	
+	
+	if(((strcmp(tipo,"popular")==0)||(strcmp(tipo,"luxo")==0)||(strcmp(tipo,"vam")==0))||((strcmp(tipo,"Popular")==0)||(strcmp(tipo,"Luxo")==0)||(strcmp(tipo,"Vam")==0))){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+
+//---------------------------Cadastro de Veiculos-----------------------------
+
+void Inclusao_Car(){
+	
+	opcoes(8);
+	
+	int resp,resp1,aux;
+	
+	gotoxy(25,15);
+	textcolor(11);
+	fflush(stdin);
+	Cod_Car(car.codigo,COD);
+	
+	gotoxy(18,20);
+	textcolor(11);
+	fflush(stdin);
+	Nome_Car(car.nome,NOME);
+	
+	gotoxy(19,25);
+	textcolor(11);
+	fflush(stdin);
+	Marca_Car(car.marca,MAR);
+	
+	aux = opcao_modelo1();
+	if(aux==1){
+		strcpy(car.tipo,"LUXO");
+	}else if(aux==2){
+		strcpy(car.tipo,"POPULAR");
+	}else if(aux==3){
+		strcpy(car.tipo,"VAM");
+	}
+	
+	gotoxy(20,35);
+	textcolor(11);
+	fflush(stdin);
+	Modelo_Car(car.modelo,MOD);
+
+	system("cls");
+	resp = verifica_resp(1);
+	system("cls");
+	
+	if(resp == 's' || resp == 'S'){
+		FILE *ark;
+		ark=fopen("File2.bin","ab");
+		
+		//verificar se o arquivo foi criado
+		if(ark == NULL){
+			printf("ERRO AO SALVAR ARQUIVO\n");
+			system("Cls");
+			exit(1);
+		}
+		else{
+			fwrite(&car,sizeof(car),1,ark);
+			fclose(ark);
+		}
+		
+		resp1 = verifica_resp(2);
+		system("cls");		
+		
+		if(resp1 == 'S' || resp1 == 's'){
+			Inclusao_Car();
+			
+		}else{
+			cadastro_veiculos();
+		}
+	}else if(resp == 'n' || resp == 'N'){
+			cadastro_veiculos();
+		}
+	
+}
+
+void Alteracao_Car(){
+	
+	FILE *ark;
+	ark=fopen("File2.bin","rb");
+	char id[12];
+	char resp,resp1,resp2;
+	int i=0,aux;
+	
+	if(ark == NULL){
+		printf("ERRO AO ABRIR ARQUIVO\n");
+		system("Cls");
+		exit(1);
+	}
+	
+	
+	gotoxy(30,21);
+	printf("INFORME O ID DO VE%cCULO QUE DESEJA ALTERAR",161);
+	borda_op(19,25,80);
+	gotoxy(20,25);
+	
+	fflush(stdin);
+	gets(id);
+	fflush(stdin);
+	
+	while(fread(&car,sizeof(car),1,ark)){
+		if(strcmp(id,car.codigo)==0){
+			i++;
+			break;
+		}
+	}
+	
+	system("cls");
+	
+	if(i==0){
+		gotoxy(44,23);
+		printf("ID N%cO ENCONTRADO",199);
+		gotoxy(34,25);
+		printf("APERTE QUALQUER BOT%cO PARA RETORNAR", 199);
+		getchar();
+		system("cls");
+		cadastro_veiculos();
+	}
+	
+	opcoes(9);
+	
+	gotoxy(25,15);
+	textcolor(11);
+	puts(car.codigo);
+	
+	gotoxy(18,20);
+	textcolor(11);
+	puts(car.nome);
+	
+	gotoxy(19,25);
+	textcolor(11);
+	puts(car.marca);
+	
+	gotoxy(18,30);
+	textcolor(11);
+	puts(car.tipo);
+	
+	gotoxy(23,35);
+	textcolor(11);
+	puts(car.modelo);
+	
+	resp = verifica_resp(3);
+	system("cls");
+	
+	if(resp == 's' || resp == 'S'){
+		opcoes(8);
+		
+		gotoxy(25,15);
+		textcolor(11);
+		fflush(stdin);
+		Cod_Car(car.codigo,COD);
+		
+		gotoxy(18,20);
+		textcolor(11);
+		fflush(stdin);
+		Nome_Car(car.nome,NOME);
+	
+		gotoxy(19,25);
+		textcolor(11);
+		fflush(stdin);
+		Marca_Car(car.marca,MAR);
+		
+		aux = opcao_modelo1();
+		if(aux==1){
+			strcpy(car.tipo,"LUXO");
+		}else if(aux==2){
+			strcpy(car.tipo,"POPULAR");
+		}else if(aux==3){
+			strcpy(car.tipo,"VAM");
+		}
+		
+		gotoxy(20,35);
+		textcolor(11);
+		fflush(stdin);
+		Modelo_Car(car.modelo,MOD);
+	
+		resp1 = verifica_resp(3);
+		system("cls");
+	
+		if(resp1 == 's' || resp1 == 'S'){	
+			FILE *arkaux;
+			arkaux=fopen("FileAUX.bin","ab");
+			rewind(ark);
+	
+			//verificar se o arquivo foi criado
+			if(arkaux == NULL){
+				printf("ERRO AO ABRIR ARQUIVO\n");
+				system("Cls");
+				exit(1);	
+			}else{
+				fwrite(&car,sizeof(car),1,arkaux);
+				while(fread(&car,sizeof(car),1,ark)==1){
+					if(strcmp(id,car.codigo) != 0){
+						fwrite(&car,sizeof(car),1,arkaux);
+						}
+					}
+				}
+					
+			fclose(ark);
+			fclose(arkaux);
+			remove("File2.bin");
+			rename("FileAUX.bin","File2.bin");
+		
+			resp2 = verifica_resp(4);
+			system("cls");
+		
+			if(resp2 == 'S' || resp2 == 's'){
+				Alteracao_Car();	
+			}else if(resp2 == 'n' || resp2 == 'N'){
+					cadastro_veiculos();
+				}
+		}else
+			if(resp1 == 'n' || resp1 == 'N'){
+				cadastro_veiculos();
+			}
+	}else{
+		cadastro_veiculos();
+	}
+	
+}
+
+void Consulta_Car(){
+	
+	int y=5;
+	
+	bordas();
+	
+	FILE *ark;
+	ark=fopen("File2.bin","rb");
+	
+	if(ark==NULL){
+		printf("ERRO AO SALVAR ARQUIVO\n");
+		system("Cls");
+		exit(1);
+	}else{
+		while(fread(&car,sizeof(car),1,ark)){
+
+			textcolor(15);
+			gotoxy(12,y);
+			printf("ID-VE%cCULO:",214);
+			gotoxy(24,y);
+			textcolor(11);
+			puts(car.codigo);
+			y++;
+			
+			textcolor(15);
+			gotoxy(12,y);
+			printf("NOME:");
+			gotoxy(18,y);
+			textcolor(11);
+			puts(car.nome);
+			y++;
+			
+			textcolor(15);
+			gotoxy(12,y);
+			printf("MARCA:");
+			gotoxy(19,y);
+			textcolor(11);
+			puts(car.marca);
+			y++;
+	
+			textcolor(15);
+			gotoxy(12,y);
+			printf("TIPO:");
+			gotoxy(18,y);
+			textcolor(11);
+			puts(car.tipo);
+			y++;
+	
+			textcolor(15);
+			gotoxy(12,y);
+			printf("MODELO:");
+			gotoxy(20,y);
+			textcolor(11);
+			puts(car.modelo);
+		
+			espacamento(12,y,80);
+			y+=3;
+		
+			if(y>40){
+				y=5;
+				getch();
+				system("cls");
+				bordas();
+			}
+		}
+	}
+	
+	fclose(ark);
+	getch();
+	system("CLS");
+	cadastro_veiculos();
+}
+
+void Exclusao_Car(){
+	
+	char id[12];
+	char resp,resp1;
+	int i=0;
+	
+	//abre o arquivo de carros
+	FILE *ark;
+	ark=fopen("File2.bin","rb");
+	
+	//verifica se o arquivo existe
+	if(ark == NULL){
+		printf("ERRO AO ABRIR ARQUIVO\n");
+		system("Cls");
+		exit(1);
+	}
+	
+	//usuário informa o código do veículo
+	gotoxy(31,21);
+	printf("INFORME O ID DO VE%cCULO QUE DESEJA EXCLUIR",161);
+	borda_op(19,25,80);
+	gotoxy(20,25);
+	
+	fflush(stdin);
+	gets(id);
+	fflush(stdin);
+	
+	system("cls");
+	
+	//verifica se o código digitado existe nos arquivos
+	while(fread(&car,sizeof(car),1,ark)==1){
+		if(strcmp(id,car.codigo)==0){
+			i++; //i+1 se for encontrado
+			break;
+		}
+	}
+	
+	if(i==0){
+		gotoxy(44,23);
+		printf("ID N%cO ENCONTRADO",199);
+		gotoxy(34,25);
+		printf("APERTE QUALQUER BOT%cO PARA RETORNAR", 199);
+		getchar();
+		system("cls");
+		cadastro_veiculos();
+	}
+	
+	//imprime na tela os dados do veículo
+	gotoxy(25,15);
+	textcolor(11);
+	puts(car.codigo);
+	
+	gotoxy(18,20);
+	textcolor(11);
+	puts(car.nome);
+	
+	gotoxy(19,25);
+	textcolor(11);
+	puts(car.marca);
+	
+	gotoxy(18,30);
+	textcolor(11);
+	puts(car.tipo);
+	
+	gotoxy(23,35);
+	textcolor(11);
+	puts(car.modelo);
+	
+	resp = verifica_resp(5);
+	system("cls");
+
+	if(resp == 's' || resp == 'S'){
+		//abre um arquivo auxiliar
+		FILE *arkaux;
+		arkaux=fopen("FileAUX.bin","ab");
+		rewind(ark);
+				
+		if(arkaux == NULL){
+			printf("ERRO AO ABRIR ARQUIVO\n");
+			system("Cls");
+			exit(1);
+		}else{
+			while(fread(&car,sizeof(car),1,ark)){
+				if(strcmp(id,car.codigo)!=0){
+					fwrite(&car,sizeof(car),1,arkaux);
+				}
+			}
+		}
+				
+		fclose(ark);
+		fclose(arkaux);
+		remove("File2.bin");
+		rename("FileAUX.bin","File2.bin");
+				
+		resp1 = verifica_resp(6);
+		system("cls");
+				
+		if(resp1 == 'S' || resp1 == 's'){
+			Exclusao_Car();
+		}else{
+			cadastro_veiculos();
+		}		
+	}else
+		if(resp == 'n' || resp == 'N'){
+			cadastro_veiculos();
+		}
+	
+}
+
+void Cod_Car(char codigo[],int tam){
+	
+	int tamanho, verif;
+	int y = 15;
+	
+	do{
+		fflush(stdin);
+		gets(codigo);
+		fflush(stdin);
+		tamanho=strlen(codigo);
+		verif=verifica_Int(codigo,tam,tamanho);
+		   
+		if(verif==0){
+			erro(1,y,25);
+		}else if(codigo[0]=='\0'){
+			erro(2,y,25);
+		}
+		
+	}while(codigo[0]=='\0' || verif==0);
+}
+
+void Nome_Car(char carro[],int tam){
+	int tamanho;
+	int y = 20;
+	
+	do{
+		fflush(stdin);
+		gets(carro);
+		fflush(stdin);
+		tamanho=strlen(carro);
+		
+		if(carro[0]=='\0'){
+			erro(2,y,17);
+		}
+		if(tamanho>tam){
+			erro(3,y,17);
+		}
+		
+	}while(tamanho > tam || carro[0] == '\0');	
+}
+
+void Marca_Car(char marca[],int tam){
+	int tamanho;
+	int y =25;
+
+	do{
+		fflush(stdin);
+		gets(marca);
+		fflush(stdin);
+		tamanho=strlen(marca);
+		
+		if(marca[0]=='\0'){
+			erro(2,y,23);
+		}else if(tamanho>tam){
+			erro(3,y,23);
+		}
+		
+	}while(tamanho > tam || marca[0] == '\0');	
+}
+ 
+void Modelo_Car(char modelo[],int tam){
+ 
+	int tamanho;
+	int y = 30;
+	
+	do{
+		fflush(stdin);
+		gets(modelo);
+		fflush(stdin);
+		tamanho=strlen(modelo);
+		
+		if(modelo[0]=='\0'){
+			erro(2,y,29);
+		}else if(tamanho>tam){
+			erro(3,y,29);
+		}
+		
+	}while(tamanho > tam || modelo[0] == '\0');
+	
+}
+
+//---------------------------MOVIMENTAÇÃO-------------------------------------
+
+void Locacao(void){
+	
+	FILE *ark;
+	ark=fopen("File.bin","rb");
+	FILE *ark1;
+	ark1=fopen("File2.bin","rb");
+	FILE *ark2;
+	ark2=fopen("File3.bin","ab");
+	char id[12];
+	char cod[12];
+	char resp,resp1;
+	int i=0;
+	
+	if(ark == NULL || ark1==NULL || ark2==NULL){
+		printf("ERRO AO ABRIR ARQUIVO\n");
+		system("Cls");
+		exit(1);
+	}
+	
+	gotoxy(30,21);
+	printf("INFORME O ID DO CLIENTE QUE DESEJA ALOCAR",161);
+	borda_op(19,25,80);
+	gotoxy(20,25);
+	fflush(stdin);
+	gets(locacao.id);
+	fflush(stdin);
+	
+	system("cls");
+	bordas();
+	
+	while(fread(&c,sizeof(c),1,ark)){
+		if(strcmp(locacao.id,c.codigo)==0){
+			i++;
+			strcpy(locacao.nomeCliente,c.nome);
+			break;
+		}
+	}
+	
+	if(i==0){
+		gotoxy(44,23);
+		printf("ID N%cO ENCONTRADO",199);
+		gotoxy(34,25);
+		printf("APERTE QUALQUER BOT%cO PARA RETORNAR", 199);
+		getchar();
+		system("cls");
+		movimentacao();
+	}
+	textcolor(15);
+	gotoxy(12,5);
+	printf("BEM VINDO, %s",c.nome);
+	gotoxy(30,7);
+	printf("DIGITE O C%cDIGO DO VE%cCULO QUE DESEJA ALOCAR",162,161);
+	borda_op(19,11,80);;
+	textcolor(11);
+	gotoxy(20,11);
+	fflush(stdin);
+	gets(locacao.codCar);
+	fflush(stdin);
+	
+	system("cls");
+	
+	i=0;
+	
+	while(fread(&car,sizeof(car),1,ark1)){
+		if(strcmp(locacao.codCar,car.codigo)==0){
+			i++;
+			strcpy(locacao.nomeCar,car.nome);
+			strcpy(locacao.marcaCar,car.marca);
+			strcpy(locacao.tipoCar,car.tipo);
+			strcpy(locacao.modeloCar,car.modelo);
+			break;
+		}
+	}
+	
+	if(i==0){
+		gotoxy(44,23);
+		printf("ID N%cO ENCONTRADO",199);
+		gotoxy(34,25);
+		printf("APERTE QUALQUER BOT%cO PARA RETORNAR", 199);
+		getchar();
+		system("cls");
+		movimentacao();
+	}
+	
+	opcoes(9);
+	
+	
+	gotoxy(25,15);
+	textcolor(11);
+	puts(car.codigo);
+	
+	gotoxy(18,20);
+	textcolor(11);
+	puts(car.nome);
+	
+	gotoxy(19,25);
+	textcolor(11);
+	puts(car.marca);
+	
+	gotoxy(18,30);
+	textcolor(11);
+	puts(car.tipo);
+	
+	gotoxy(23,35);
+	textcolor(11);
+	puts(car.modelo);
+	
+	resp = verifica_resp(7);
+	system("cls");
+	
+	if(resp == 's' || resp == 'S'){
+		
+		locacao.identificador = identificador(locacao.identificador);
+		locacao.situacao=LOCADO;
+		fwrite(&locacao,sizeof(move),1,ark2);
+		gotoxy(40,24);
+		printf("LOCA%c%cO REALIZADA",135,198);
+		getch();
+		system("cls");
+		fclose(ark2);
+		resp1 = verifica_resp(8);
+		system("cls");
+		
+		if(resp1=='s' || resp1=='S'){
+			Locacao();
+		}else{
+			movimentacao();
+		}
+		
+	}else{
+		movimentacao();
+	}
+	fclose(ark);
+	fclose(ark1);
+}
+
+void Devolucao(void){
+	
+	FILE *ark;
+	ark=fopen("File3.bin","rb");
+	char id[12];
+	char cod[12];
+	char resp,resp1;
+	int i=0;
+	
+	if(ark==NULL){
+		printf("ERRO AO ABRIR ARQUIVO\n");
+		system("Cls");
+		exit(1);
+	}
+	
+	gotoxy(30,21);
+	printf("INFORME O ID DO CLIENTE QUE DESEJA DEVOLVER",161);
+	borda_op(19,24,80);
+	gotoxy(20,24);
+	fflush(stdin);
+	gets(id);
+	fflush(stdin);
+	
+	system("cls");
+	
+	while(fread(&locacao,sizeof(move),1,ark)){
+		if(strcmp(id,locacao.id)==0){
+			strcpy(devolucao.id,locacao.id);
+			strcpy(devolucao.nomeCliente,locacao.nomeCliente);
+			i++;
+			break;
+		}
+	}
+	
+	if(i==0){
+		gotoxy(44,23);
+		printf("ID N%cO ENCONTRADO",199);
+		gotoxy(34,25);
+		printf("APERTE QUALQUER BOT%cO PARA RETORNAR", 199);
+		getchar();
+		system("cls");
+		movimentacao();
+	}
+	
+	textcolor(15);
+	gotoxy(12,5);
+	printf("BEM VINDO, %s",locacao.nomeCliente);
+	gotoxy(30,7);
+	printf("DIGITE O C%cDIGO DO VE%cCULO QUE DESEJA ALOCAR",162,161);
+	borda_op(19,10,80);;
+	textcolor(10);
+	gotoxy(20,11);
+	fflush(stdin);
+	gets(cod);
+	fflush(stdin);	
+	system("cls");
+	
+	rewind(ark);
+	i=0;
+	while(fread(&locacao,sizeof(move),1,ark)){
+		if(strcmp(cod,locacao.codCar)==0){
+			devolucao.identificador = locacao.identificador;
+			strcpy(devolucao.codCar,locacao.codCar);
+			strcpy(devolucao.nomeCar,locacao.nomeCar);
+			strcpy(devolucao.tipoCar,locacao.tipoCar);
+			strcpy(devolucao.modeloCar,locacao.modeloCar);
+			strcpy(devolucao.marcaCar,locacao.marcaCar);
+			i++;
+			break;
+		}
+	}
+	
+	if(i==0){
+		gotoxy(44,23);
+		printf("ID N%cO ENCONTRADO",199);
+		gotoxy(34,25);
+		printf("APERTE QUALQUER BOT%cO PARA RETORNAR", 199);
+		getchar();
+		system("cls");
+		movimentacao();
+	}
+	
+	opcoes(9);
+	
+	gotoxy(25,15);
+	textcolor(11);
+	puts(locacao.codCar);
+	
+	gotoxy(18,20);
+	textcolor(11);
+	puts(locacao.nomeCar);
+	
+	gotoxy(19,25);
+	textcolor(11);
+	puts(locacao.marcaCar);
+	
+	gotoxy(18,30);
+	textcolor(11);
+	puts(locacao.tipoCar);
+	
+	gotoxy(23,35);
+	textcolor(11);
+	puts(locacao.modeloCar);
+	
+	resp = verifica_resp(9);
+	system("cls");
+	
+	if(resp == 's' || resp == 'S'){
+		FILE *arkaux;
+		arkaux=fopen("FileAUX.bin","ab");
+		rewind(ark);
+		
+		if(arkaux == NULL){
+			printf("ERRO AO ABRIR ARQUIVO\n");
+			system("Cls");
+			exit(1);	
+		} 
+		
+		/*while(fread(&locacao,sizeof(move),1,ark)){
+			if(devolucao.identificador == locacao.identificador){
+				locacao.situacao=DEVOLVIDO;	
+				fwrite(&locacao,sizeof(move),1,ark);
+	
+			}
+		}*/
+		
+		
+		while(fread(&locacao,sizeof(move),1,ark)){
+			if(devolucao.identificador != locacao.identificador){
+				fwrite(&locacao,sizeof(move),1,arkaux);
+			}
+		}
+		
+		rewind(ark);
+		while(fread(&locacao,sizeof(move),1,ark)){						
+			if(devolucao.identificador == locacao.identificador){
+					devolucao.situacao=DEVOLVIDO;	
+					fwrite(&devolucao,sizeof(move),1,arkaux);
+					
+			}
+		}
+		
+		fclose(ark);
+		fclose(arkaux);
+		
+		remove("File3.bin");
+		rename("FileAUX.bin","File3.bin");
+		
+		resp1 = verifica_resp(10);
+		system("cls");
+		
+		if(resp1=='s'||resp1=='S'){
+			Devolucao();
+		}else
+			if(resp1=='s'||resp1=='S'){
+				movimentacao();
+			}
+				
+	}else{
+		movimentacao();
+	}
+}
+
+int identificador(int numero){
+	FILE *ark;
+	ark=fopen("File3.bin","rb");
+	int i=0;
+	
+	//srand(time(NULL));
+	numero = rand() % 1000;
+	while(fread(&move,sizeof(move),1,ark)){
+		if(numero==move.identificador){
+			i++;
+			break;
+		}
+	}
+	
+	if(i==0){
+		return numero;	
+	}else{
+		numero = rand() % 1000;
+		return numero;
+	}
+	fclose(ark);
+}
+
+void Balanco_Acervo(void){
+	
+	FILE *arkCar;
+	arkCar=fopen("File2.bin","a+b");
+	FILE *arkCliente;
+	arkCliente=fopen("File.bin","a+b");
+	FILE *arkMove;
+	arkMove=fopen("File3.bin","a+b");
+	int cliente=0,car=0;
+	int locado=0,devolvido=0;
+	int y = 9;
+	
+	if(arkCliente==NULL||arkCar==NULL||arkMove==NULL){
+		printf("ERRO AO SALVAR ARQUIVO\n");
+		system("Cls");
+		exit(1);
+	}
+		
+	while(fread(&c,sizeof(c),1,arkCliente)){
+		cliente++;
+	}	
+	
+	while(fread(&car,sizeof(car),1,arkCar)){
+		car++;
+	}
+	bordas();
+	gotoxy(7,5);
+	printf("TOTAL DE CLIENTES = %d",cliente);
+	espacamento(7,5,80);
+	gotoxy(7,7);
+	printf("TOTAL DE CARROS = %d",car);
+	espacamento(7,7,80);
+	
+	while(fread(&locacao,sizeof(move),1,arkMove)){
+		switch(locacao.situacao){
+			case LOCADO:
+				locado++;
+				
+				textcolor(15);
+				gotoxy(12,y);
+				printf("SITUA%c%cO DO CARRO = %d",128,199,locacao.situacao);
+				gotoxy(24,y);
+				textcolor(11);
+				y++;
+				
+				textcolor(15);
+				gotoxy(12,y);
+				printf("ID-VE%cCULO:",214);
+				gotoxy(24,y);
+				textcolor(11);
+				puts(locacao.codCar);
+				y++;
+			
+				textcolor(15);
+				gotoxy(12,y);
+				printf("NOME:");
+				gotoxy(18,y);
+				textcolor(11);
+				puts(locacao.nomeCar);
+				y++;
+			
+				textcolor(15);
+				gotoxy(12,y);
+				printf("MARCA:");
+				gotoxy(19,y);
+				textcolor(11);
+				puts(locacao.marcaCar);
+				y++;
+		
+				textcolor(15);
+				gotoxy(12,y);
+				printf("TIPO:");
+				gotoxy(18,y);
+				textcolor(11);
+				puts(locacao.tipoCar);
+				y++;
+	
+				textcolor(15);
+				gotoxy(12,y);
+				printf("MODELO:");
+				gotoxy(20,y);
+				textcolor(11);
+				puts(locacao.modeloCar);
+				
+				y+=3;
+				
+				if(y>39){
+					getch();
+					system("cls");
+					bordas();
+				}
+				break;
+				
+			case DEVOLVIDO:
+				devolvido++;
+				
+				textcolor(15);
+				gotoxy(12,y);
+				printf("SITUA%c%cO DO CARRO = %d",128,199,locacao.situacao);
+				gotoxy(24,y);
+				textcolor(11);
+				y++;
+				
+				textcolor(15);
+				gotoxy(12,y);
+				printf("ID-VE%cCULO:",214);
+				gotoxy(24,y);
+				textcolor(11);
+				puts(locacao.codCar);
+				y++;
+			
+				textcolor(15);
+				gotoxy(12,y);
+				printf("NOME:");
+				gotoxy(18,y);
+				textcolor(11);
+				puts(locacao.nomeCar);
+				y++;
+			
+				textcolor(15);
+				gotoxy(12,y);
+				printf("MARCA:");
+				gotoxy(19,y);
+				textcolor(11);
+				puts(locacao.marcaCar);
+				y++;
+		
+				textcolor(15);
+				gotoxy(12,y);
+				printf("TIPO:");
+				gotoxy(18,y);
+				textcolor(11);
+				puts(locacao.tipoCar);
+				y++;
+	
+				textcolor(15);
+				gotoxy(12,y);
+				printf("MODELO:");
+				gotoxy(20,y);
+				textcolor(11);
+				puts(locacao.modeloCar);
+				
+				y+=3;
+				if(y>39){
+					getch();
+					system("cls");
+					bordas();
+				}
+				break;
+		}
+	}
+	
+	getch();
+	system("cls");
+	bordas();
+	
+	gotoxy(7,5);
+	printf("TOTAL DE CARROS LOCADOS = %d",locado);
+	espacamento(7,5,80);
+	gotoxy(7,7);
+	printf("TOTAL DE CARROS DEVOLVIDOS = %d",devolvido);
+	espacamento(7,7,80);
+	
+	fclose(arkCliente);
+	fclose(arkCar);
+	fclose(arkMove);
+	getch();
+	system("CLS");
+	menu();
+	
+}
